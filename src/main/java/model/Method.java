@@ -25,7 +25,7 @@ public class Method extends OBE implements IArtefact{
 		signatures.add(sign);
 	}
 	
-	public void invocations(Invocation invo) {
+	public void addInvocations(Invocation invo) {
 		invocations.add(invo);
 	}
 	

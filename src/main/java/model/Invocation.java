@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Invocation {
-	List<Method> canditates;
-	
-	public Invocation () {
-		canditates = new ArrayList<Method>();
+	Method canditate;
+
+	public Method getCanditate() {
+		return canditate;
+	}
+
+	public void setCanditate(Method canditate) {
+		this.canditate = canditate;
 	}
 	
-	
-	
-	public void addCanditates(Method met) {
-		canditates.add(met);
-	}
+
 }

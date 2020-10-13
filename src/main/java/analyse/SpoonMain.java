@@ -9,7 +9,9 @@ import java.util.Set;
 import model.Attribute;
 import model.Class;
 import model.IArtefact;
+import model.Inheritance;
 import model.Interface;
+import model.Invocation;
 import model.LocalVariable;
 import model.Method;
 import model.OBE;
@@ -19,6 +21,7 @@ import spoon.Launcher;
 import spoon.MavenLauncher;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
@@ -28,6 +31,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class SpoonMain {
@@ -74,17 +78,17 @@ public class SpoonMain {
 		Map<String, Package> packagelist = new HashMap<String, Package>();
 		Map<String, Method> methMap = new HashMap<String, Method>();
 		Map<String, CtInterface> interfaceMap = new HashMap<String, CtInterface>();
+		Map<String, Class> mapClass = new HashMap<String, Class>();
 		
 		List<OBE> listOBE = new ArrayList<OBE>();
 		
+		
 		for(CtClass cls : classList) {
-			//System.out.println(cls.getSimpleName());
 			CtPackage pac = cls.getPackage();
 			Package myPac;
 			Class myClass = new Class(cls.getSimpleName());
 			
 			try {
-				
 				//Verification si package deja ajouté
 				if(packagelist.containsKey(pac.getSimpleName())) {
 					myPac = packagelist.get(pac.getSimpleName());
@@ -96,57 +100,119 @@ public class SpoonMain {
 				}
 				//Ajout de la classe dans le package
 				myPac.addCLass(myClass);
-				listOBE.add(myClass);
 				
-				//traitement des méthodes de la classe
-				Set<CtMethod> methods = cls.getMethods();
-				for(CtMethod method : methods) {
-					Method myMethod = null;
-					
-					//Verification si méthode deja ajoutée
-					if(methMap.containsKey(method.getSimpleName())) {
-						myMethod = methMap.get(method.getSimpleName());
+				//Ajout de la classe dans la liste des OBE
+				listOBE.add(myClass);
+				mapClass.put(cls.getSimpleName(), myClass);
+				
+				
+				//Traitement de la super Classe
+				Class classSup = null;
+				if(cls.getSuperclass() != null) {
+					if(!mapClass.containsKey(cls.getSuperclass().toString())) {
+						classSup = new Class(cls.getSuperclass().toString());
+						mapClass.put(cls.getSuperclass().toString(), classSup);
+						listOBE.add(classSup);
 					}else {
-						myMethod = new Method(method.getSimpleName());
-						methMap.put(method.getSimpleName(), myMethod);
-						listOBE.add(myMethod);
+						classSup = mapClass.get(cls.getSuperclass().toString());
 					}
 					
+					Inheritance myHeritage = new Inheritance();
+					myHeritage.setSousClasse(myClass);
+					myHeritage.setSuperClasses(classSup);
 					
-					//Ajout de la signature
-					myClass.addMethode(myMethod);
-					Signature mySignature = new Signature();
-					method.getSignature();
-					myMethod.addSignature(mySignature);
+					myClass.addSuperClasse(myHeritage);
+					classSup.addSousClasse(myHeritage);
+				}
+				
 					
-					
-					//Variable locales dans une méthode
-					for(CtVariable variable : method.getElements(new TypeFilter<CtVariable>(CtVariable.class))) {
-						//System.out.println(cls.getSimpleName()+" : "+method.getSimpleName()+" : "+variable.getSimpleName());
-						LocalVariable myVariable = new LocalVariable(variable.getSimpleName());
-						myMethod.addLocalVariable(myVariable);
-						listOBE.add(myVariable);
+					//traitement des méthodes de la classe
+					Set<CtMethod> methods = cls.getMethods();
+					for(CtMethod method : methods) {
+						Method myMethod = null;
+						
+						//Verification si méthode deja ajoutée
+						if(methMap.containsKey(method.getSimpleName())) {
+							myMethod = methMap.get(method.getSimpleName());
+						}else {
+							myMethod = new Method(method.getSimpleName());
+							methMap.put(method.getSimpleName(), myMethod);
+							listOBE.add(myMethod);
 						}
+						
+						
+						//Ajout de la signature
+						myClass.addMethode(myMethod);
+						Signature mySignature = new Signature();
+						method.getSignature();
+						myMethod.addSignature(mySignature);
+						
+						
+						//Variable locales dans une méthode
+						for(CtVariable variable : method.getElements(new TypeFilter<CtVariable>(CtVariable.class))) {
+							//System.out.println(cls.getSimpleName()+" : "+method.getSimpleName()+" : "+variable.getSimpleName());
+							LocalVariable myVariable = new LocalVariable(variable.getSimpleName());
+							myMethod.addLocalVariable(myVariable);
+							listOBE.add(myVariable);
+							}
+					}
 					
+					//Attribut d'une classe
+					for(CtFieldReference attribut : cls.getDeclaredFields()) {
+						//System.out.println(cls.getSimpleName()+" : "+attribut.getSimpleName());
+						Attribute myAttribut = new Attribute(attribut.getSimpleName());
+						myClass.addAttribut(myAttribut);
+						listOBE.add(myAttribut);
+					}
 					
-				}
-				
-				
-				
-				
-				//Attribut d'une classe
-				for(CtFieldReference attribut : cls.getDeclaredFields()) {
-					//System.out.println(cls.getSimpleName()+" : "+attribut.getSimpleName());
-					Attribute myAttribut = new Attribute(attribut.getSimpleName());
-					myClass.addAttribut(myAttribut);
-					listOBE.add(myAttribut);
-				}
-				
 				
 			}catch (NullPointerException e) {
 				System.out.println("Package of classe : "+cls.getSimpleName()+" not added");
 			}
 		}
+		
+		
+		
+		for(CtClass cls : classList) {
+			Set<CtMethod> methods = cls.getMethods();
+			for(CtMethod method : methods) {
+				for(CtInvocation invocation : method.getElements(new TypeFilter<CtInvocation>(CtInvocation.class))) {
+					String mthName = invocation.toString();
+					String[ ] mthNames = mthName.split("\\.");
+					if(!mthName.equals("") && mthNames.length < 3 && methMap.containsKey(method.getSimpleName())) {
+						if(mthNames.length > 1) {
+							mthName = mthNames[1];
+						}else if(mthNames.length > 0){
+							mthName = mthNames[0];
+						}
+						mthName = mthName.split("\\(")[0];
+						//System.out.println(method.getSimpleName()+"  =>  "+mthName);
+						
+						
+						Method myMethodecandidate = null;
+						if(!methMap.containsKey(mthName)) {
+							myMethodecandidate = new Method(mthName);
+							methMap.put(mthName, myMethodecandidate);
+							listOBE.add(myMethodecandidate);
+						}else{
+							myMethodecandidate = methMap.get(mthName);
+						}
+						
+						Invocation myInvocation = new Invocation();
+						myInvocation.setCanditate(myMethodecandidate);
+						Method myMethod = methMap.get(method.getSimpleName());
+						myMethod.addInvocations(myInvocation);
+						
+					}else {
+						//System.out.println("problème avec === "+method.getSimpleName());
+					}
+
+					
+				}
+			}
+		}
+		
+		
 		
 		
 		//Ajout des interface dans le package
@@ -171,8 +237,10 @@ public class SpoonMain {
 		
 		
 		
+		
+		System.out.println("\n \n ========================================================== \n");
 		for(IArtefact arte : getListArtefact(listOBE) ) {
-			System.out.println(arte.getNom()+" : "+arte.getIdentifiant());
+			System.out.println(arte.getClass()+" ( "+arte.getNom()+" )");
 		}
 		
 		//System.out.println(packagelist.size());
