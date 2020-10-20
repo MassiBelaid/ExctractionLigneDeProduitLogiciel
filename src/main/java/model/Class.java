@@ -39,4 +39,8 @@ public class Class extends OBE implements IArtefact{
 	public int getIdentifiant() {
 		return getNom().hashCode();
 	}
+	
+	public List<Attribute> getAttribute(){
+		return this.attributs;
+	}
 }

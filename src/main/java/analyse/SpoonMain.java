@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import model.Access;
 import model.Attribute;
 import model.Class;
 import model.IArtefact;
@@ -31,6 +32,7 @@ import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtFieldReference;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
@@ -79,6 +81,8 @@ public class SpoonMain {
 		Map<String, Method> methMap = new HashMap<String, Method>();
 		Map<String, CtInterface> interfaceMap = new HashMap<String, CtInterface>();
 		Map<String, Class> mapClass = new HashMap<String, Class>();
+		Map<String, Attribute> mapAttributs = new HashMap<String, Attribute>();
+		
 		
 		List<OBE> listOBE = new ArrayList<OBE>();
 		
@@ -143,6 +147,7 @@ public class SpoonMain {
 						
 						//Ajout de la signature
 						myClass.addMethode(myMethod);
+						myMethod.setClasseMere(myClass);
 						Signature mySignature = new Signature();
 						method.getSignature();
 						myMethod.addSignature(mySignature);
@@ -162,6 +167,7 @@ public class SpoonMain {
 						//System.out.println(cls.getSimpleName()+" : "+attribut.getSimpleName());
 						Attribute myAttribut = new Attribute(attribut.getSimpleName());
 						myClass.addAttribut(myAttribut);
+						mapAttributs.put(myAttribut.getNom(), myAttribut);
 						listOBE.add(myAttribut);
 					}
 					
@@ -209,7 +215,19 @@ public class SpoonMain {
 
 					
 				}
+				for(CtReference acces : method.getElements(new TypeFilter<CtReference>(CtReference.class))) {
+					//System.out.println(acces.getSimpleName());
+					if(mapAttributs.containsKey(acces.getSimpleName()) && methMap.containsKey(method.getSimpleName())) {
+						Attribute myAttribut = mapAttributs.get(acces.getSimpleName());
+						Access myAcces = new Access();
+						myAcces.setAttr(myAttribut);
+						myAcces.setMet(methMap.get(method.getSimpleName()));
+					}
+				}
 			}
+			
+			
+			
 		}
 		
 		
@@ -237,13 +255,37 @@ public class SpoonMain {
 		
 		
 		
+		for(Class cls : mapClass.values()) {
+			for(Attribute attr : cls.getAttribute()) {
+				for(Access acc : attr.getAccess()) {
+					Method mm = acc.getMet();
+					System.out.println(cls.getNom()+"   =>   "+mm.getClasseMere().getNom());
+					
+				}
+			}
+		}
+		
+		for(Method method : methMap.values()) {
+			try {
+				for(Invocation invoc : method.getInvocations()){
+					System.out.println(method.getClasseMere().getNom()+"  ==>  "+invoc.getCanditate().getClasseMere().getNom());
+				}
+			}catch (NullPointerException e) {
+				
+			}
+		}
+		
+		
+		
+		
 		
 		System.out.println("\n \n ========================================================== \n");
+		
 		for(IArtefact arte : getListArtefact(listOBE) ) {
 			System.out.println(arte.getClass()+" ( "+arte.getNom()+" )");
 		}
 		
-		//System.out.println(packagelist.size());
+		
 		System.out.println("FINISH.");
 		
 	}

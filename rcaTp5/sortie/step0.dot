@@ -1,0 +1,46 @@
+digraph G { 
+	rankdir=BT;
+subgraph Product_Con?guration_Matrice { 
+label="Product_Con?guration_Matrice";
+1 [shape=record,label="{Concept_Product_Con?guration_Matrice_14|Class ( Canvas )\nMethod( mouseClicked )\nMethod ( mouseDragged )\nMethod ( mouseEntered )\nMethod ( mouseExited )\nMethod ( mouseMoved )\nMethod ( mousePressed )\nMethod ( mouseReleased )\nMethod ( paintComponent )\nMethod ( selectedFigure )\nAttribute ( start )\nAttribute ( end )\nAttribute ( figureSelected )\nAttribute ( color )\nClass ( FigureTypes )\nClass ( Main )\nMethod ( init )\nMethod ( initAtoms )\nMethod ( initContentPane )\nMethod ( initLayout )\nMethod ( initListeners )\nMethod ( main )\nAttribute ( WIDTH )\nAttribute ( HEIGHT )\nAttribute ( toolPanel )\nAttribute ( canvas )\nAttribute ( contentPane )\nMethod ( getHeight )\nMethod ( getWidth )\nMethod ( getX )\nMethod ( getY )\nClass ( JComponent )\nMethod ( add )\nMethod ( fillRect )\nMethod ( getContentPane )\nMethod ( setLayout )\nMethod ( super )\n|}"];
+2 [shape=record,label="{Concept_Product_Con?guration_Matrice_11|Method ( mouseDraggedLine )\nMethod ( mousePressedLine )\nMethod ( mouseReleasedLine )\nAttribute ( lines )\nAttribute ( newLine )\nClass ( Line )\nMethod ( getEnd )\nMethod ( getStart )\nMethod ( paint )\nMethod ( setEnd )\nAttribute ( startPoint )\nAttribute ( endPoint )\nAttribute ( lineText )\nAttribute ( lineButton )\n|}"];
+3 [shape=record,label="{Concept_Product_Con?guration_Matrice_3||DrawSPL_c.Product_P1\n}"];
+4 [shape=record,label="{Concept_Product_Con?guration_Matrice_10|Method ( mouseDraggedRect )\nMethod ( mousePressedRect )\nMethod ( mouseReleasedRect )\nAttribute ( rects )\nAttribute ( newRect )\nAttribute ( rectText )\nAttribute ( rectButton )\nClass ( Rectangle )\nMethod ( updateCorner )\nAttribute ( x )\nAttribute ( y )\nAttribute ( width )\n.Attribute ( height )\nAttribute ( dx )\nAttribute ( dy )\nAttribute ( x2 )\nAttribute ( y2 )\nMethod ( drawRect )\nMethod ( abs )\n|}"];
+5 [shape=record,label="{Concept_Product_Con?guration_Matrice_6|Attribute ( black )\nAttribute ( color3 )\nMethod ( setSelectedIndex )\n|}"];
+6 [shape=record,label="{Concept_Product_Con?guration_Matrice_7|Attribute ( color2 )\n|DrawSPL_c.Product_P4\n}"];
+7 [shape=record,label="{Concept_Product_Con?guration_Matrice_9|Method ( setColor )\nMethod ( wipe )\nAttribute ( wipeText )\nAttribute ( colors )\nAttribute ( red )\nAttribute ( green )\nAttribute ( blue )\nAttribute ( wipeButton )\nAttribute ( colorsBox )\nAttribute ( colorsPanel )\nMethod ( equals )\nMethod ( getSource )\nMethod ( getSelectedItem )\n|}"];
+8 [shape=record,label="{Concept_Product_Con?guration_Matrice_0||}"];
+9 [shape=record,label="{Concept_Product_Con?guration_Matrice_1||DrawSPL_c.Product_P5\n}"];
+10 [shape=record,label="{Concept_Product_Con?guration_Matrice_4|Method ( paint2 )\nMethod ( setEnd2 )\n|DrawSPL_c.Product_P3\n}"];
+11 [shape=record,label="{Concept_Product_Con?guration_Matrice_13|Method ( repaint )\n|}"];
+12 [shape=record,label="{Concept_Product_Con?guration_Matrice_2||DrawSPL_c.Product_P2\n}"];
+13 [shape=record,label="{Concept_Product_Con?guration_Matrice_5||}"];
+14 [shape=record,label="{Concept_Product_Con?guration_Matrice_8|Class ( Enum )\n|}"];
+15 [shape=record,label="{Concept_Product_Con?guration_Matrice_12|Class ( JFrame )\n|}"];
+	15 -> 1
+	14 -> 1
+	11 -> 1
+	6 -> 2
+	12 -> 2
+	8 -> 3
+	5 -> 4
+	10 -> 4
+	3 -> 5
+	9 -> 5
+	3 -> 6
+	5 -> 7
+	6 -> 7
+	8 -> 9
+	9 -> 10
+	7 -> 11
+	13 -> 11
+	2 -> 11
+	8 -> 12
+	12 -> 13
+	9 -> 13
+	13 -> 14
+	10 -> 14
+	4 -> 15
+	7 -> 15
+}
+}
