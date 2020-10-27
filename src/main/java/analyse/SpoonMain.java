@@ -82,6 +82,7 @@ public class SpoonMain {
 		Map<String, CtInterface> interfaceMap = new HashMap<String, CtInterface>();
 		Map<String, Class> mapClass = new HashMap<String, Class>();
 		Map<String, Attribute> mapAttributs = new HashMap<String, Attribute>();
+		List<Invocation> listInvocs = new ArrayList<Invocation>(); 
 		
 		
 		List<OBE> listOBE = new ArrayList<OBE>();
@@ -184,6 +185,7 @@ public class SpoonMain {
 			for(CtMethod method : methods) {
 				for(CtInvocation invocation : method.getElements(new TypeFilter<CtInvocation>(CtInvocation.class))) {
 					String mthName = invocation.toString();
+					
 					String[ ] mthNames = mthName.split("\\.");
 					if(!mthName.equals("") && mthNames.length < 3 && methMap.containsKey(method.getSimpleName())) {
 						if(mthNames.length > 1) {
@@ -193,6 +195,7 @@ public class SpoonMain {
 						}
 						mthName = mthName.split("\\(")[0];
 						//System.out.println(method.getSimpleName()+"  =>  "+mthName);
+						
 						
 						
 						Method myMethodecandidate = null;
@@ -205,9 +208,13 @@ public class SpoonMain {
 						}
 						
 						Invocation myInvocation = new Invocation();
-						myInvocation.setCanditate(myMethodecandidate);
+						myInvocation.setAppellante(myMethodecandidate);
+						
 						Method myMethod = methMap.get(method.getSimpleName());
+						myInvocation.setAppellee(myMethod);
 						myMethod.addInvocations(myInvocation);
+						listInvocs.add(myInvocation);
+						//System.out.println("Invocation : "+method.getSimpleName()+" ==> "+mthName);
 						
 					}else {
 						//System.out.println("problème avec === "+method.getSimpleName());
@@ -265,14 +272,12 @@ public class SpoonMain {
 			}
 		}
 		
-		for(Method method : methMap.values()) {
-			try {
-				for(Invocation invoc : method.getInvocations()){
-					System.out.println(method.getClasseMere().getNom()+"  ==>  "+invoc.getCanditate().getClasseMere().getNom());
-				}
-			}catch (NullPointerException e) {
-				
-			}
+		for(Invocation inv : listInvocs) {
+			System.out.println("Invocation : "+inv.getAppellante().getNom()+" ==> "+inv.getAppellee().getNom());
+		}
+		
+		for(Attribute atr : mapAttributs.values()) {
+			//System.out.println();
 		}
 		
 		
