@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import guru.nidi.graphviz.attribute.MapAttributes;
 import model.Access;
 import model.Attribute;
 import model.Class;
@@ -37,9 +38,9 @@ import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class SpoonMain {
+	
 
 	public static void main(String[] args) {
-		
 		System.out.println("Begin Analysis");
 
 		// Parsing arguments using JCommander
@@ -83,6 +84,8 @@ public class SpoonMain {
 		Map<String, Class> mapClass = new HashMap<String, Class>();
 		Map<String, Attribute> mapAttributs = new HashMap<String, Attribute>();
 		List<Invocation> listInvocs = new ArrayList<Invocation>(); 
+		List<Access> listAccess =  new ArrayList<Access>();
+		
 		
 		
 		List<OBE> listOBE = new ArrayList<OBE>();
@@ -168,6 +171,7 @@ public class SpoonMain {
 						//System.out.println(cls.getSimpleName()+" : "+attribut.getSimpleName());
 						Attribute myAttribut = new Attribute(attribut.getSimpleName());
 						myClass.addAttribut(myAttribut);
+						myAttribut.setClasseMere(myClass);
 						mapAttributs.put(myAttribut.getNom(), myAttribut);
 						listOBE.add(myAttribut);
 					}
@@ -229,6 +233,7 @@ public class SpoonMain {
 						Access myAcces = new Access();
 						myAcces.setAttr(myAttribut);
 						myAcces.setMet(methMap.get(method.getSimpleName()));
+						listAccess.add(myAcces);
 					}
 				}
 			}
@@ -262,6 +267,44 @@ public class SpoonMain {
 		
 		
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		List<String> listConceptChoisi = new ArrayList<String>();
+		listConceptChoisi.add("mouseDraggedRect");
+		listConceptChoisi.add("mousePressedRect");
+		listConceptChoisi.add("mouseReleasedRect");
+		listConceptChoisi.add("rects");
+		listConceptChoisi.add("newRect");
+		listConceptChoisi.add("rectText");
+		listConceptChoisi.add("rectButton");
+		listConceptChoisi.add("Rectangle");
+		listConceptChoisi.add("updateCorner");
+		listConceptChoisi.add("x");
+		listConceptChoisi.add("y");
+		listConceptChoisi.add("width");
+		listConceptChoisi.add("height");
+		listConceptChoisi.add("dx");
+		listConceptChoisi.add("dy");
+		listConceptChoisi.add("x2");
+		listConceptChoisi.add("y2");
+		listConceptChoisi.add("drawRect");
+		listConceptChoisi.add("abs");
+		
+		
+		
+		
+		
+		
+		
+		System.out.println("\n \n ==========================HERITAGE================================ \n");
+		
 		for(Class cls : mapClass.values()) {
 			for(Attribute attr : cls.getAttribute()) {
 				for(Access acc : attr.getAccess()) {
@@ -272,23 +315,68 @@ public class SpoonMain {
 			}
 		}
 		
-		for(Invocation inv : listInvocs) {
-			System.out.println("Invocation : "+inv.getAppellante().getNom()+" ==> "+inv.getAppellee().getNom());
-		}
-		
-		for(Attribute atr : mapAttributs.values()) {
-			//System.out.println();
-		}
 		
 		
 		
 		
-		
-		System.out.println("\n \n ========================================================== \n");
+		System.out.println("\n \n ==========================ARTEFACT================================ \n");
 		
 		for(IArtefact arte : getListArtefact(listOBE) ) {
 			System.out.println(arte.getClass()+" ( "+arte.getNom()+" )");
 		}
+		
+		
+		System.out.println("\n \n ===========================INVOCATION=============================== \n");
+		
+		for(Invocation inv : listInvocs) {
+			if(listConceptChoisi.contains(inv.getAppellante().getNom()) && listConceptChoisi.contains(inv.getAppellee().getNom()))
+				System.out.println("Invocation : "+inv.getAppellante().getNom()+" ==> "+inv.getAppellee().getNom());
+		}
+		
+		
+		
+		System.out.println("\n \n ==========================ACCESS================================ \n");
+		
+		
+		for(Access acs : listAccess) {
+			if(listConceptChoisi.contains(acs.getMet().getNom()) && listConceptChoisi.contains(acs.getAttr().getNom()))
+				//System.out.println("Access from " + acs.getMet().getNom() + " to attribute : " + acs.getAttr().getNom());
+				System.out.println("\""+ acs.getMet().getNom() + "\" -> \"" + acs.getAttr().getNom()+"\"");
+		}
+		
+		
+		System.out.println("\n \n ==========================METHOD-CLASS================================ \n");
+		
+		
+		for(Method mth : methMap.values()) {
+				try {
+					if(listConceptChoisi.contains(mth.getNom()) && listConceptChoisi.contains(mth.getClasseMere().getNom()))
+					//System.out.println("Method " + mth.getNom() + " belong to : " + mth.getClasseMere().getNom());
+					System.out.println("\""+ mth.getNom() + "\" -> \"" + mth.getClasseMere().getNom()+"\"");
+				}
+				catch (NullPointerException e) {
+					System.out.println(mth.getNom()+" does not have super class");
+				}
+			
+		}
+		
+		
+		System.out.println("\n \n ==========================ATTRIBUTE-CLASS================================ \n");
+		
+		
+		for(Attribute attr : mapAttributs.values()) {
+				try {
+					if(listConceptChoisi.contains(attr.getNom()) && listConceptChoisi.contains(attr.getClasseMere().getNom()))
+					//System.out.println("Attribute " + attr.getNom() + " belong to : " + attr.getClasseMere().getNom());
+					System.out.println("\""+ attr.getNom() + "\" -> \"" + attr.getClasseMere().getNom()+"\"");
+				}
+				catch (NullPointerException e) {
+					System.out.println(attr.getNom()+" does not have super class");
+				}
+			
+		}
+		
+		
 		
 		
 		System.out.println("FINISH.");
@@ -296,7 +384,7 @@ public class SpoonMain {
 	}
 	
 	
-	
+
 	
 	//Renvoie liste des Artefacts
 	public static ArrayList<IArtefact> getListArtefact(List<OBE> listOBe){

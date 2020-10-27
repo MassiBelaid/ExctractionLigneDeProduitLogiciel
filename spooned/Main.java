@@ -23,6 +23,8 @@ public class Main extends JFrame {
 
     // Button names
     // Define string constants here
+    private static final String lineText = "Line";
+
     private static final String wipeText = "Wipe";
 
     private static final String rectText = "Rectangle";
@@ -42,6 +44,8 @@ public class Main extends JFrame {
 
     // *** Declares atomic elements
     // Declare bottons
+    JButton lineButton;
+
     JButton wipeButton;
 
     JButton rectButton;
@@ -59,6 +63,7 @@ public class Main extends JFrame {
     // *** Initialization of atomic elements
     public void initAtoms() {
         // Initilize the buttons
+        lineButton = new JButton(lineText);
         wipeButton = new JButton(wipeText);
         rectButton = new JButton(rectText);
         // Add the names of the color options here using Vector's add method
@@ -96,6 +101,7 @@ public class Main extends JFrame {
     public void initContentPane() {
         // Add buttons to tool panel
         // Note: order of addition determines the order of appearance
+        toolPanel.add(lineButton);
         toolPanel.add(wipeButton);
         toolPanel.add(colorsPanel);
         toolPanel.add(rectButton);
@@ -110,6 +116,11 @@ public class Main extends JFrame {
      * Initializes the listeners for the buttons and the combo box
      */
     public void initListeners() {
+        lineButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                canvas.selectedFigure(Canvas.FigureTypes.LINE);
+            }
+        });
         wipeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 canvas.wipe();

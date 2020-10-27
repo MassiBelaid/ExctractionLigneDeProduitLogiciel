@@ -6,10 +6,19 @@ import java.util.List;
 public class Attribute extends OBE implements IArtefact{
 	
 	List<Access> access;
+	Class classeMere;
 
 	public Attribute(String nom) {
 		super(nom);
 		access = new ArrayList<Access>();
+	}
+
+	public Class getClasseMere() {
+		return classeMere;
+	}
+
+	public void setClasseMere(Class classeMere) {
+		this.classeMere = classeMere;
 	}
 
 	@Override
